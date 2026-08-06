@@ -115,3 +115,18 @@ Windows-runtime-mirroring layout is the starting point.
 Auto-update parity (needs upstream manifest hosting + basic Update host),
 signing/notarization, universal/Intel binary, upstream macOS CI artifacts,
 self-contained bundle.
+
+## As built (2026-08-05)
+
+Implementation deviations from the design above, all sanctioned during
+execution: the bundle uses a flat `Contents/MacOS/` layout mirroring the
+Windows `runtime/` directory (the host resolves fonts, Lua modules, and
+native modules relative to the executable's directory — the
+Frameworks/Resources split described earlier does not match the host's
+contract); the SimpleGraphic install tree lives at `$(SG_DIR)/build/dist`;
+the vcpkg triplet is `arm64-osx` with an overlay making only ANGLE dynamic
+(GLFW dlopens `libEGL.dylib` at runtime); `CFBundleExecutable` is a wrapper
+script baking `POB_SCRIPT_PATH`, keeping PoB-specific paths out of the
+upstreamable SimpleGraphic repo. `pob://` URL delivery into Lua works for
+CLI invocation; Apple-Event delivery at app launch is best-effort and
+delivery to a running instance is not implemented.
